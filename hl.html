@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>JSON Data Rendering</title>
+  <style>
+    /* CSS styles for the UI */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Developers</h1>
+  <input type="text" id="searchInput" placeholder="Search by name or designation/skills">
+  <table id="developersTable"></table>
+
+  <script>
+    // JavaScript logic to retrieve JSON data and render it on the screen
+
+    // Function to fetch JSON data from the provided URL
+    function fetchData() {
+      fetch('https://raw.githubusercontent.com/dixitsoham7/dixitsoham7.github.io/main/index.json')
+        .then(response => response.json())
+        .then(data => {
+          renderDevelopers(data.developers);
+        })
+        .catch(error => console.error(error));
+    }
+
+    // Function to render developers data on the screen
+    function renderDevelopers(developers) {
+      const table = document.getElementById('developersTable');
+      table.innerHTML = '';
+
+      // Create table header
+      const headerRow = table.insertRow();
+      headerRow.innerHTML = '<th>Name</th><th>Designation</th><th>Skills</th>';
+
+      // Create table rows for each developer
+      developers.forEach(developer => {
+        const row = table.insertRow();
+        row.innerHTML = `<td>${developer.name}</td><td>${developer.designation}</td><td>${developer.skills.join(', ')}</td>`;
+      });
+    }
+
+    // Function to filter data based on search input
+    function filterData() {
+      const searchInput = document.getElementById('searchInput');
+      const searchText = searchInput.value.toLowerCase();
+      const table = document.getElementById('developersTable');
+      const rows = table.getElementsByTagName('tr');
+
+      // Hide rows that don't match the search text
+      for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+        const name = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+        const designationSkills = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase() + rows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+        if (name.includes(searchText) || designationSkills.includes(searchText)) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    }
+
+    // Fetch JSON data and render it on page load
+    window.addEventListener('load', fetchData);
+
+    // Event listener for search input
+    document.getElementById('searchInput').addEventListener('input', filterData);
+  </script>
+</body
